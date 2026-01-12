@@ -47,28 +47,18 @@ def delete_employee_from_db(emp):
 def add_employee():
     emp = {
         "name": name_var.get().strip(),
-        "role": role_var.get().strip(),
+        "role": role_var.get(),
         "phone": phone_var.get().strip(),
-        "gender": gender_var.get().strip(),
+        "gender": gender_var.get(),
         "salary": salary_var.get().strip()
     }
-
-    # Validation: All fields must be filled
-    if not all(emp.values()) or emp["role"] == " " or emp["gender"] == " ":
-        messagebox.showerror("Input Error", "All fields (Name, Role, Phone, Gender, Salary) must be filled.")
+    if not emp["name"] or not emp["role"]:
+        messagebox.showwarning("Input Error", "Name and Role are required.")
         return
-
-    # Validation: Phone number must be 10 digits and numeric
-    if not emp["phone"].isdigit() or len(emp["phone"]) != 10:
-        messagebox.showerror("Input Error", "Phone number must be exactly 10 digits.")
-        return
-
     employees.append(emp)
     tree.insert("", tk.END, values=(emp["name"], emp["role"], emp["phone"], emp["gender"], emp["salary"]))
     save_employee_to_db(emp)
     clear_fields()
-
-
 
 def delete_employee():
     selected = tree.selection()
@@ -96,36 +86,18 @@ def update_employee():
     if not selected:
         messagebox.showwarning("Selection Error", "Please select an employee to update.")
         return
-
-    updated_emp = {
-        "name": name_var.get().strip(),
-        "role": role_var.get().strip(),
-        "phone": phone_var.get().strip(),
-        "gender": gender_var.get().strip(),
-        "salary": salary_var.get().strip()
-    }
-
-    # Validation: All fields must be filled
-    if not all(updated_emp.values()) or updated_emp["role"] == " " or updated_emp["gender"] == " ":
-        messagebox.showerror("Input Error", "All fields must be filled.")
-        return
-
-    # Validation: Phone number must be 10 digits and numeric
-    if not updated_emp["phone"].isdigit() or len(updated_emp["phone"]) != 10:
-        messagebox.showerror("Input Error", "Phone number must be exactly 10 digits.")
-        return
-
     values = tree.item(selected[0])["values"]
     for emp in employees:
         if list(emp.values()) == list(values):
-            emp.update(updated_emp)
+            emp["name"] = name_var.get().strip()
+            emp["role"] = role_var.get()
+            emp["phone"] = phone_var.get().strip()
+            emp["gender"] = gender_var.get()
+            emp["salary"] = salary_var.get().strip()
             break
-
-    tree.item(selected[0], values=(updated_emp["name"], updated_emp["role"], updated_emp["phone"],
-                                   updated_emp["gender"], updated_emp["salary"]))
-    save_employee_to_db(updated_emp)
+    tree.item(selected[0], values=(name_var.get(), role_var.get(), phone_var.get(), gender_var.get(), salary_var.get()))
+    save_employee_to_db(emp)
     clear_fields()
-
 
 def search_employees():
     query = search_var.get().strip().lower()
